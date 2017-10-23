@@ -7,15 +7,16 @@ class Kele
   def initialize(email, password)
     response = self.class.post(url("/sessions"), body: { "email": email, "password": password })
     @auth_token = response["auth_token"]
+    @authorization = {"authorization": @auth_token}
   end
   
   def get_me
-    response = self.class.get(url("/users/me"), headers: {"authorization": @auth_token})
+    response = get_response("/users/me")
     JSON.parse(response.body)
   end
 
   def get_mentor_availability(mentor_id)
-    response = self.class.get(url("/mentors/"+mentor_id+"/student_availability"), headers: {"authorization": @auth_token})
+    response = get_response("/mentors/"+mentor_id+"/student_availability")
     JSON.parse(response.body)
   end
   
@@ -25,13 +26,17 @@ class Kele
   end
   
   def show_roadmap(roadmap_id)
-    response = self.class.get(url("/roadmaps/"+roadmap_id), headers: {"authorization": @auth_token})
+    response = get_response("/roadmaps/"+roadmap_id)
     JSON.parse(response.body)
-    
+  end
+  
+  def get_checkpoint(checkpoint_id)
+    response = get_response("/checkpoints/"+checkpoint_id)
+    JSON.parse(response.body)
   end
   
   private
-    def url(endpoint)
-      "https://www.bloc.io/api/v1"+endpoint
-    end
+  def get_response(url_endpoint)
+    self.class.get("https://www.bloc.io/api/v1"+url_endpoint, headers: @authorization)
+  end
 end
