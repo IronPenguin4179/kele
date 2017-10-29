@@ -23,6 +23,29 @@ class Kele
     JSON.parse(response.body)
   end
   
+  def get_messages(page_number="1")
+    response = self.class.get(@base_uri+"/message_threads", headers: @authorization, body: {"page": page_number})
+    JSON.parse(response.body)
+  end
+  
+  def create_message(
+    sender, ##="justin.walker4179@email.bakersfieldcollege.edu",
+    recipient_id, ##="2376054",
+    token = nil,
+    subject = nil,
+    stripped_text ##="Something cool to tell you about.")
+    )
+    response = self.class.post(@base_uri+"/messages", body: {
+      "sender": sender,
+      "recipient_id": recipient_id,
+      "token": token,
+      "subject": subject,
+      "stripped-text": stripped_text
+    }, headers: @authorization)
+    
+    puts response
+  end
+  
   private
   def get_response(url_endpoint)
     self.class.get(@base_uri+url_endpoint, headers: @authorization)
