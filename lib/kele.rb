@@ -24,41 +24,40 @@ class Kele
   end
   
   def get_messages(page_number="1")
-    response = self.class.get(@base_uri+"/message_threads", headers: @authorization, body: {"page": page_number})
+    body = {"page": page_number}
+    response = get_response("message_threads", body)
     JSON.parse(response.body)
   end
   
-  def create_message(
-    sender, ##="justin.walker4179@email.bakersfieldcollege.edu",
-    recipient_id, ##="2376054",
-    token = nil,
-    subject = nil,
-    stripped_text ##="Something cool to tell you about.")
-    )
-    response = self.class.post(@base_uri+"/messages", body: {
+  def create_message(sender, recipient_id, token = nil, subject = nil, stripped_text)
+    body = {
       "sender": sender,
       "recipient_id": recipient_id,
       "token": token,
       "subject": subject,
       "stripped-text": stripped_text
-    }, headers: @authorization)
+    }
+    response = post_response("/messages", body)
     JSON.parse(response.body)
   end
   
   def create_submission(checkpoint_id, assignment_branch, assignment_commit_link, comment)
-    enrollment_id = get_me["current_enrollment"]["id"]
-    response = self.class.post(@base_uri+"/checkpoint_submissions", body: {
-      "checkpoint_id": checkpoint_id,
-      "assignment_branch": assignment_branch,
-      "assignment_commit_link": assignment_commit_link,
-      "comment": comment,
-      "enrollment_id": enrollment_id
-    }, headers: @authorization)
+    body = {"checkpoint_id": checkpoint_id,
+            "assignment_branch": assignment_branch,
+            "assignment_commit_link": assignment_commit_link,
+            "comment": comment,
+            "enrollment_id": get_me["current_enrollment"]["id"]
+    }
+    response = post_response("/checkpoint_submissions", body)
     JSON.parse(response.body)
   end
   
   private
-  def get_response(url_endpoint)
-    self.class.get(@base_uri+url_endpoint, headers: @authorization)
+  def get_response(url_endpoint, body={})
+    self.class.get(@base_uri+url_endpoint, body: body, headers: @authorization)
+  end
+  
+  def post_response(url_endpoint, body={})
+    self.class.post(@base_uri+url_endpoint, body: body, headers: @authorization)
   end
 end
