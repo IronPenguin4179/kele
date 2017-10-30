@@ -9,8 +9,8 @@ class Kele
   def initialize(email, password)
     @base_uri = "https://www.bloc.io/api/v1"
     response = self.class.post(@base_uri+"/sessions", body: { "email": email, "password": password })
-    @auth_token = response["auth_token"]
-    @authorization = {"authorization": @auth_token}
+    auth_token = response["auth_token"]
+    @authorization = {"authorization": auth_token}
   end
   
   def get_me
@@ -25,20 +25,20 @@ class Kele
   
   def get_messages(page_number="1")
     body = {"page": page_number}
-    response = get_response("message_threads", body)
+    response = get_response("/message_threads", body)
     JSON.parse(response.body)
   end
   
-  def create_message(sender, recipient_id, token = nil, subject = nil, stripped_text)
-    body = {
+  def create_message(sender, recipient_id, stripped_text, subject = nil, token = nil)
+    query = {
       "sender": sender,
       "recipient_id": recipient_id,
-      "token": token,
+      "stripped-text": stripped_text,
       "subject": subject,
-      "stripped-text": stripped_text
+      "token": token
     }
-    response = post_response("/messages", body)
-    JSON.parse(response.body)
+    response = self.class.post(@base_uri+"/messages", query: query, headers: @authorization)
+    puts response.code
   end
   
   def create_submission(checkpoint_id, assignment_branch, assignment_commit_link, comment)
@@ -51,7 +51,7 @@ class Kele
     response = post_response("/checkpoint_submissions", body)
     JSON.parse(response.body)
   end
-  
+  #2366806
   private
   def get_response(url_endpoint, body={})
     self.class.get(@base_uri+url_endpoint, body: body, headers: @authorization)
