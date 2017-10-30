@@ -22,7 +22,7 @@ class Kele
     response = get_response("/mentors/"+mentor_id+"/student_availability")
     JSON.parse(response.body)
   end
-  
+
   def get_messages(page_number="1")
     body = {"page": page_number}
     response = get_response("/message_threads", body)
@@ -51,7 +51,17 @@ class Kele
     response = post_response("/checkpoint_submissions", body)
     JSON.parse(response.body)
   end
-  #2366806
+
+  def get_roadmap(roadmap_id)
+    response = get_response("/roadmaps/"+roadmap_id)
+    JSON.parse(response.body)
+  end
+  
+  def get_checkpoint(checkpoint_id)
+    response = get_response("/checkpoints/"+checkpoint_id)
+    JSON.parse(response.body)
+  end
+  
   private
   def get_response(url_endpoint, body={})
     self.class.get(@base_uri+url_endpoint, body: body, headers: @authorization)
