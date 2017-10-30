@@ -23,6 +23,16 @@ class Kele
     JSON.parse(response.body)
   end
   
+  def get_roadmap(roadmap_id)
+    response = get_response("/roadmaps/"+roadmap_id)
+    JSON.parse(response.body)
+  end
+  
+  def get_checkpoint(checkpoint_id)
+    response = get_response("/checkpoints/"+checkpoint_id)
+    JSON.parse(response.body)
+  end
+  
   private
   def get_response(url_endpoint)
     self.class.get(@base_uri+url_endpoint, headers: @authorization)
